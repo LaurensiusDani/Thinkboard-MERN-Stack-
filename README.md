@@ -1,12 +1,13 @@
 # ThinkBoard
 
-ThinkBoard is a full-stack MERN (MongoDB, Express, React, Node.js) application for taking notes. It features a clean and modern user interface and a robust backend with rate limiting.
+ThinkBoard is a full-stack web application for taking notes. It features a clean and modern user interface and a robust backend powered by Node.js, Express, and SQLite, with rate limiting support.
 
 ## Features
 
 *   **CRUD Operations**: Create, Read, Update, and Delete notes.
 *   **Responsive Design**: A mobile-first design that works on all screen sizes.
-*   **Rate Limiting**: The backend API is protected against brute-force attacks with a rate limiter.
+*   **SQLite Storage**: Local file-based SQL database storing notes with string UUIDs, completely self-contained.
+*   **Resilient Rate Limiting**: Backend is protected against brute-force attacks via Upstash Redis. If Redis is offline or paused, the rate limiter automatically bypasses to keep the application functional.
 *   **User-Friendly Interface**: Built with Tailwind CSS and daisyUI for a great user experience.
 *   **Real-time Feedback**: Uses `react-hot-toast` for instant user notifications.
 
@@ -24,8 +25,8 @@ ThinkBoard is a full-stack MERN (MongoDB, Express, React, Node.js) application f
 
 *   **Runtime**: [Node.js](https://nodejs.org/)
 *   **Framework**: [Express](https://expressjs.com/)
-*   **Database**: [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
-*   **Rate Limiting**: [Upstash Redis](https://upstash.com/)
+*   **Database**: [SQLite](https://www.sqlite.org/) via `sqlite` (promises) and `sqlite3`
+*   **Rate Limiting**: [Upstash Redis](https://upstash.com/) (with local bypass fallback)
 
 ## Getting Started
 
@@ -33,7 +34,6 @@ ThinkBoard is a full-stack MERN (MongoDB, Express, React, Node.js) application f
 
 *   Node.js (v18 or later)
 *   npm
-*   MongoDB instance (local or cloud)
 
 ### Installation & Setup
 
@@ -48,7 +48,10 @@ ThinkBoard is a full-stack MERN (MongoDB, Express, React, Node.js) application f
     *   Install dependencies: `npm install`
     *   Create a `.env` file in the `backend` directory and add the following variables:
         ```env
-        MONGO_URI=<YOUR_MONGODB_CONNECTION_STRING>
+        PORT=5001
+        SQLITE_DB_PATH=database.sqlite
+        
+        # (Optional) Upstash Redis config for rate limiting
         UPSTASH_REDIS_REST_URL=<YOUR_UPSTASH_REDIS_URL>
         UPSTASH_REDIS_REST_TOKEN=<YOUR_UPSTASH_REDIS_TOKEN>
         ```
@@ -64,7 +67,7 @@ ThinkBoard is a full-stack MERN (MongoDB, Express, React, Node.js) application f
         ```sh
         npm run dev
         ```
-    *   The server will start on `http://localhost:5001`.
+    *   The server will start on `http://localhost:5001` and automatically initialize the SQLite database table structure.
 
 2.  **Start the frontend development server:**
     *   In the `frontend` directory, run:
